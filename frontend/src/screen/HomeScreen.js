@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { productListDispatch } from '../action/productListDispatch'
+import LoadingBox from '../Components/LoadingBox'
+import MessageBox from '../Components/MessageBox'
+import Products from '../Components/Products'
 
 function HomeScreen() {  
   const dispatch = useDispatch()
@@ -11,30 +13,21 @@ function HomeScreen() {
   }, [])
   const { loading, products, errorMsg} = productList
   return (
-    <div>        
-    {loading ? 'Loading....' :
-      errorMsg ? errorMsg : 
+    
+    loading ? <LoadingBox /> :
+      errorMsg ? <MessageBox> {errorMsg} </MessageBox> : 
       <div>
           <ul className="products">
               {
                 products.map(product => 
-                  <li key={product._id}>
-                    <div className="product">
-                        <Link to={'/product/' + product._id} > <img src={product.image} alt="" /> </Link>
-                        <div className="product-name"> <Link to={'/product/' + product._id} > {product.name}</Link> </div>
-                        <div className="product-brand"> {product.brand} </div>
-                        <div className="price"> ${product.price} </div>
-                        <div className="product-rating"> {product.ratings} ({product.numReviews} Reviews)</div>
-
-                    </div>
-                </li>
+                  <Products key={product._id} product={product} />
                   )
-              }
-                  
-            </ul>
+              }                 
+          </ul>
       </div>
-      }
-      </div>
+     
+      
+  
   )
 }
 

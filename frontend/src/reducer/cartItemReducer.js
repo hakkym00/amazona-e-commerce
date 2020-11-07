@@ -6,16 +6,18 @@ const cartItemReducer = (state= {cartItems: [], shipping: {}, payment: {}}, acti
             const item = action.payload
             const product = state.cartItems.find(x => x.product === item.product)
             if(product){
-            return {cartItems: state.cartItems.map(x => x.product === product.product? item : x) }
+            return {...state, cartItems: state.cartItems.map(x => x.product === product.product? item : x) }
             }else{
-                return {cartItems: [...state.cartItems, item]}
+                return {...state, cartItems: [...state.cartItems, item]}
             }
         case 'REMOVE_ITEM_FROM_CART':
-            return{cartItems: state.cartItems.filter(x => x.product !== action.payload )}
+            return{...state, cartItems: state.cartItems.filter(x => x.product !== action.payload )}
         case 'CART_SAVE_SHIPPING' :
             return {...state, shipping: action.payload}
         case 'CART_SAVE_PAYMENT' :
             return {...state, payment: action.payload}
+        case 'DELETE_CART' :
+            return {...state, cartItems: []}
         default:
             return state
     }

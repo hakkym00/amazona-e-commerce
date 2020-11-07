@@ -1,24 +1,17 @@
 import React, { useEffect } from 'react'
 import {Link} from 'react-router-dom'
-import {addToCart, removeFromCart} from '../action/cartAction'
+import LoadingBox from '../Components/LoadingBox'
+import MessageBox from '../Components/MessageBox'
 import { useDispatch, useSelector } from 'react-redux'
 import CheckoutSteps from '../Components/CheckoutSteps'
+import { createOrder } from '../action/productListDispatch'
 
 
 function PlaceOrder(props) {
     const cart = useSelector(state => state.cart)
     const dispatch = useDispatch()
-    
-    useEffect(() => {
-        
-    }, [])
-    
-    const checkOutHandler = () => {
-        props.history.push('/signin?redirect=shipping')
-    }
-    const placeorderHandler = () => {
-        
-    }
+    const createdOrder = useSelector(state => state.createdOrder)
+    const {loading, success, error, order} = createdOrder
     
     const { cartItems, shipping, payment } = cart
     const itemsPrice =  cartItems.reduce((a, c) => a + c.price* c.qty, 0)
@@ -30,6 +23,17 @@ function PlaceOrder(props) {
         props.history.push('/shipping')
     }else if(!payment.paymentMethod){
         props.history.push('/payment')
+    }
+    
+    useEffect(() => {
+        if(success){
+            props.history.push(`/order/${order._id}`)
+            dispatch({type: 'CREATE_ORDER_RESET'})
+        }
+    }, [success])
+    
+    const placeorderHandler = () => {
+        dispatch(createOrder({...cart, orderItems: cart.cartItems, itemsPrice, shippingPrice, taxPrice, totalPrice }))
     }
     return (
         <div>
@@ -74,7 +78,7 @@ function PlaceOrder(props) {
                             </div>
                         </div>
                         <div className='cart-price'>
-                            ${item.price}
+                            #{item.price}
                         </div>
                     </li>
                     )
@@ -92,20 +96,24 @@ function PlaceOrder(props) {
                     <li>Order Summary: </li>
                     <li>
                         <div>Items</div>
-                        <div> ${itemsPrice} </div>
+                        <div> #{itemsPrice} </div>
                     </li>
                     <li>
                         <div>Shipping</div>
-                        <div> ${shippingPrice} </div>
+                        <div> #{shippingPrice} </div>
                     </li>
                     <li>
                         <div>Tax</div>
-                        <div> ${taxPrice} </div>
+                        <div> #{taxPrice} </div>
                     </li>
                     <li>
                         <div>Total Order</div>
-                        <div> ${totalPrice} </div>
+                        <div> #{totalPrice} </div>
                     </li>
+                    {
+                    loading ? <LoadingBox /> :
+                    error ? <MessageBox> {error} </MessageBox> : null
+                    }
                 </ul>
             </div>
             

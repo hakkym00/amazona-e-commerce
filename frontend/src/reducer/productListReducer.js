@@ -1,5 +1,5 @@
 
-const productListReducer = (state = {products: []}, action) => {
+const productListReducer = (state = {loading: true, products: [] }, action) => {
     switch (action.type) {
       case 'FETCH__REQUEST' :
         return{loading: true, products: []}
@@ -19,6 +19,44 @@ const productListReducer = (state = {products: []}, action) => {
       default :
       return state
     }
+}
+
+const singleProductReducer = (state = {loading: true, product: {} }, action) => {
+  switch (action.type) {
+    case 'REQUEST__SINGLE__PRODUCT' :
+      return{loading: true, product: {}}
+    case 'REQUEST__SINGLE__PRODUCT__SUCCESS' :
+      return {
+        loading: false,
+        product: action.payload,
+        errorMsg: ''
+      }
+    case 'REQUEST__SINGLE__PRODUCT__FAILED' :
+      return {
+        loading: false,
+        product: {},
+        errorMsg: action.payload
+      }
+
+    default :
+    return state 
+  }
+
+}
+
+const createOrderReducer = (state = {loading:false, order: {}}, action) => {
+  switch (action.type) {
+    case 'CREATE_ORDER_REQUEST' :
+      return {loading: true}
+    case 'CREATE_ORDER_SUCCESS' :
+      return {loading: false, success: true, order: action.payload}
+    case 'CREATE_ORDER_FAILED' :
+      return {loading: false, error: action.payload}
+    case 'CREATE_ORDER_RESET' :
+      return {}
+    default :
+    return state
+  }
 }
 
 const productSaveReducer = (state = {product : {} }, action) => {
@@ -47,4 +85,4 @@ const productDeleteReducer = (state = {product : {} }, action) => {
     }
 }
 
-export { productListReducer, productSaveReducer, productDeleteReducer}
+export { productListReducer, productSaveReducer, productDeleteReducer, singleProductReducer, createOrderReducer}

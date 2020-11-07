@@ -36,7 +36,7 @@ function CartScreen(props) {
                 </li>
                 {
                     cartItems.length === 0 ? 
-                    <div> Cart is empty </div> :
+                    <div className="info-sec"> Cart is empty </div> :
                     cartItems.map(item => 
                     <li key={item.product}>
                         <div className='cart-image'>
@@ -58,7 +58,7 @@ function CartScreen(props) {
                             </div>
                         </div>
                         <div className='cart-price'>
-                            ${item.price}
+                            #{item.price}
                         </div>
                     </li>
                     )
@@ -69,7 +69,7 @@ function CartScreen(props) {
                 <h3>
                     Subtotal ( {cartItems.reduce((a, c) => a + c.qty , 0)} items)
                     :
-                    ${cartItems.reduce((a, c) => a + c.qty * c.price, 0 )}
+                    #{cartItems.reduce((a, c) => a + c.qty * c.price, 0 )}
                 </h3>
                 <div className='primary'>
                     <button onClick={checkOutHandler} disabled={cartItems.length === 0} >

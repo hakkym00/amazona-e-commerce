@@ -23,8 +23,10 @@ const removeFromCart = (productId) => (dispatch, getState) => {
     Cookie.set('cartItems', JSON.stringify(cartItems))
 }
 
-const saveShipping = (data) => (dispatch) => {
+const saveShipping = (data) => (dispatch, getState) => {
     dispatch({type: 'CART_SAVE_SHIPPING', payload: data})
+    const { cart: {shipping} } = getState()
+    Cookie.set('shipping', JSON.stringify(shipping))
 }
 const savePayment = (data) => (dispatch) => {
     dispatch({type: 'CART_SAVE_PAYMENT', payload: data})

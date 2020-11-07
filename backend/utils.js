@@ -19,14 +19,14 @@ const isAuth = (req, res, next) => {
         onlyToken = token.slice(7, token.length)
         jwt.verify(onlyToken, config.JWT_SECRET, (err, decode) => {
             if(err) {
-                res.status(401).send({msg: 'Invalid token'})
+                res.status(401).send({message: 'Invalid token'})
+            }else{
+                req.user = decode
+                next()
             }
-            req.user = decode
-            next()
-            return
         })
     }else{
-        return res.status(401).send({msg: 'Token is not supplied'})
+        return res.status(401).send({message: 'Token is not supplied'})
     }
 }
 

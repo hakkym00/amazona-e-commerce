@@ -17,10 +17,10 @@ router.get('/:id', async (req, res) => {
         if(products){
             res.send(products)
         }else{
-            return res.status(404).send({msg: 'Product not found'})
+            return res.status(404).send({message: 'Product not found'})
         }   
     } catch (error) {
-        return res.status(404).send({msg: 'Product not found'})
+        return res.status(500).send(error)
     }
     
 })
@@ -84,7 +84,7 @@ router.delete('/:id', isAuth, isAdmin, async(req, res) => {
         deletedProduct.remove()
         return res.send({message: 'Product deleted'})
     }
-    return res.send({error: 'Error in deletion'})
+    return res.status(400).send({message: 'Error in deletion'})
 })
 
 

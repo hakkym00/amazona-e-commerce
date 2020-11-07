@@ -23,7 +23,12 @@ function RegisterScreen(props) {
     }, [userInfo])
     const submitHandler = (e) => {
         e.preventDefault();
-        dispatch(register(name, email, password, rePassword))
+        if(password !== rePassword){
+            alert('Password doesnot match')
+        }else{
+            dispatch(register(name, email, password))
+        }
+        
     }
     console.log(error)
     return (

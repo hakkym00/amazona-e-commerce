@@ -1,47 +1,32 @@
 import axios from 'axios'
-import React, { useReducer, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {Link} from 'react-router-dom'
-
-const initialState = {
-    loading: true,
-    product: {},
-    errMsg: ''
-}
-
-const reducer = (state, action) => {
-    switch (action.type) {
-        case 'FETCH_DETAILS_SUCCESS' :
-            return {loading: false, product: action.payload}
-        case 'FETCH_DETAILS_FAILED' : 
-            return { loading: false, errMsg: 'Product Not Found'}
-        default:
-            return state
-    }
-}
-
-
+import { singleProductDispatch } from '../action/productListDispatch'
+import LoadingBox from '../Components/LoadingBox'
+import MessageBox from '../Components/MessageBox'
+import RatingBox from '../Components/RatingBox'
 
 function ProductScreen(props) { 
-    const [qty, setQty] = useState(1)
-    const [productDetails , dispatch] = useReducer(reducer, initialState)
+    const { id } = props.match.params
+    const dispatch = useDispatch()
+    const [qty, setQty] = useState(1)  
+    
+    const singleProduct = useSelector(state => state.singleProduct)
     useEffect(() => {
-     axios.get('/api/products/' + props.match.params.id ).then((response) => {
-        dispatch({ type: 'FETCH_DETAILS_SUCCESS', payload: response.data})
-     }).catch((e) => {
-         dispatch({type: 'FETCH_DETAILS_FAILED'})
-     })
-        
-    }, [props.match.params.id])
+     dispatch(singleProductDispatch(id))
+
+    }, [])
     
     const addToCart = () => {
         props.history.push('/cart/' + props.match.params.id + '?qty=' + qty)
     }
 
-const { loading, product, errMsg} = productDetails
+const { loading, product, errorMsg} = singleProduct
 
 return (
-    loading ? <div> Loading... </div> :
-        errMsg ? errMsg :
+    loading ? <LoadingBox /> :
+      errorMsg ? <MessageBox> {errorMsg} </MessageBox> : 
         <div>
             <div className='back-to-home'>
                 <Link to='/' >Back to home </Link>
@@ -62,17 +47,15 @@ return (
                             {product.numReviews === 0 ? 5 : product.numReviews} customer reviews
                         </li>
                         <li>
-                            Price: <b> ${product.price}</b>
+                            Price: <b> #{product.price}</b>
                         </li>
                         <li>Description: {product.description} Nice Shirt </li>
-                        <li>
-                          Rating:  {product.ratings === 0 ? 4.5 : product.ratings}
-                        </li>
+                        <div className="product-rating"> <RatingBox ratings={product.ratings} numReviews={product.numReviews} /> </div>
                     </ul>
                 </div>
                 <div className='details-action' >
                     <ul>
-                        <li> Price: <b> ${product.price}</b> </li>
+                        <li> Price: <b> #{product.price}</b> </li>
                         <li>Status: {product.availablequantity <= 0 ? 'Out of Stock' : 'Stock available'} </li>
                         <li>Qty: <select value={qty} onChange={(e) => setQty(e.target.value)} >  
                                     {[...Array(product.availablequantity).keys()].map(x => <option key={x + 1} value={x + 1} > {x + 1} </option> )} 

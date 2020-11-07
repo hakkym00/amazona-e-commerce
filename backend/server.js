@@ -1,10 +1,10 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const mongoose = require('mongoose')
-const data = require('./data')
 const config = require('./config')
 const userRouter = require('./routes/userRoutes')
 const productRouter = require('./routes/productRoute')
+const orderRouter = require('./routes/orderRoute')
 const port = 5000 || process.env.PORT
 
 dotenv.config()
@@ -24,10 +24,10 @@ app.use(express.json())
 
 app.use('/api/users/', userRouter)
 app.use('/api/products', productRouter)
-
-// app.get('/api/products', (req, res) => {
-//     res.send(data.products)
-// })
+app.use('/api/order', orderRouter)
+app.use('/api/config/paystack', (req, res) => {
+    res.send(process.env.PAYSTACK_CLIENTID )
+})
 
 app.get('/api/products/:id', (req, res) => {
     const id = req.params.id

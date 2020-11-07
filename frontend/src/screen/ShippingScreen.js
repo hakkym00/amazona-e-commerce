@@ -5,14 +5,33 @@ import {saveShipping} from '../action/cartAction'
 import CheckoutSteps from '../Components/CheckoutSteps'
 
 function ShippingScreen(props) {
+    const userSignin = useSelector((state) => state.userSignin)
+    const {userInfo} = userSignin
+    if(!userInfo){
+        props.history.push('/signin')
+    }
+    const [fullName, setFullName] = useState('')
+    const [email, setEmail] = useState('')
     const [address, setAddress] = useState('')
     const [country, setCountry] = useState('')
     const [city, setCity] = useState('')
     const [postalCode, setPostalCode] = useState('')
+    const cart = useSelector(state => state.cart)
+    const {shipping} = cart
     const dispatch = useDispatch()
+    useEffect(() => {
+        if(shipping){
+            setFullName(shipping.fullName)
+            setEmail(shipping.email)
+            setAddress(shipping.address)
+            setCity(shipping.city)
+            setCountry(shipping.country)
+            setPostalCode(shipping.postalCode)
+        }
+    }, [shipping])
     const submitHandler = (e) => {
         e.preventDefault();
-        dispatch(saveShipping({address, country, city, postalCode}))
+        dispatch(saveShipping({fullName, email, address, country, city, postalCode}))
         props.history.push('/payment')
     }
     return ( <div>
@@ -21,6 +40,18 @@ function ShippingScreen(props) {
             <form onSubmit={submitHandler} >
                 <ul className='form-container'>
                     <li><h2>Shipping</h2></li>
+                    <li>
+                        <label htmlFor='fullName'>
+                            Full Name
+                        </label>
+                        <input type='text' name='fullname' id='fullname' value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                    </li>
+                    <li>
+                        <label htmlFor='email'>
+                            Email
+                        </label>
+                        <input type='email' name='email' id='email' value={email} onChange={(e) => setEmail(e.target.value)} />
+                    </li>
                     <li>
                         <label htmlFor='address'>
                             Address
