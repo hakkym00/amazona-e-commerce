@@ -3,8 +3,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { deleteProduct, productListDispatch, saveProduct } from '../action/productListDispatch'
 import {signin} from '../action/signinAction'
+import LoadingBox from '../Components/LoadingBox'
+import MessageBox from '../Components/MessageBox'
 
 function ProductsScreen(props) {
+    const userSignin = useSelector(state => state.userSignin)
+    const {userInfo} = userSignin
+    if(userInfo && !userInfo.isAdmin){
+        props.history.push('/')
+    }
     const [modalVisible, setModalVisible] = useState(false)
     const [_id, set_id] = useState('')
     const [name, setName] = useState('')
@@ -52,52 +59,14 @@ function ProductsScreen(props) {
         dispatch(deleteProduct(product._id))
     }
     return (
+        loading ? <LoadingBox /> :
+        errorMsg ? <MessageBox> {errorMsg} </MessageBox> : 
         <div className='content content-margined'>
             <div className='product-header'>
             <h3>Products</h3>
             <button className='btn-color' onClick= {() => openModal({})}>Create product</button>
             </div>
-            <div className='product-list'>
-                <table className='table'>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Qty In stock</th>
-                            <th>Category</th>
-                            <th>Brand</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            products.map(product =>
-                                <tr key= {product._id} >
-                                    <td> {product._id} </td>
-                                    <td> {product.name} </td>
-                                    <td> #{product.price} </td>
-                                    <td> {product.availablequantity} </td>
-                                    <td> {product.category} </td>
-                                    <td> {product.brand} </td>
-                                    <td>
-                                        <button className='btn' onClick= {() => openModal(product)} >Edit</button>
-                                        {' '}
-                                        <button className='btn' onClick= {() => deleteHandler(product)} >Delete</button>
-                                    </td>
-                                    
-                                </tr>
-                                )
-                        }
-                        <tr>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-            </div>
-        
-        {
+            {
             modalVisible && <div className='form'>
             <form onSubmit={submitHandler} >
                 <ul className='form-container'>
@@ -155,7 +124,45 @@ function ProductsScreen(props) {
             </form>
             </div>
         }
+            <div className='product-list'>
+                <table className='table'>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Qty In stock</th>
+                            <th>Category</th>
+                            <th>Brand</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            products.map(product =>
+                                <tr key= {product._id} >
+                                    <td> {product._id} </td>
+                                    <td> {product.name} </td>
+                                    <td> #{product.price} </td>
+                                    <td> {product.availablequantity} </td>
+                                    <td> {product.category} </td>
+                                    <td> {product.brand} </td>
+                                    <td>
+                                        <button className='btn' onClick= {() => openModal(product)} >Edit</button>
+                                        {' '}
+                                        <button className='btn' onClick= {() => deleteHandler(product)} >Delete</button>
+                                    </td>
+                                    
+                                </tr>
+                                )
+                        }
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
 
+            </div>
          
         </div>
     )

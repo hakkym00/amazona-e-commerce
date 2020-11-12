@@ -1,9 +1,10 @@
 import { FETCH__FAILED, FETCH__SUCCESS } from '../constant/constant'
 import Axios from 'axios'
 import Cookies from 'js-cookie'
-const productListDispatch = () => (dispatch) => {
+const productListDispatch = (category = '', searchKeyword = '', sortBy = 'newest') => (dispatch) => {
+  console.log( `searchKeyword is ${searchKeyword} . sortBy is ${sortBy} , category is ${category}`)
       dispatch({type: 'FETCH__REQUEST'})
-  Axios.get('/api/products').then((response) => {
+  Axios.get(`/api/products?category=${category}&searchKeyword=${searchKeyword}&sortBy=${sortBy}`).then((response) => {
       const {data} = response
       dispatch({type: FETCH__SUCCESS, payload: data})
     })

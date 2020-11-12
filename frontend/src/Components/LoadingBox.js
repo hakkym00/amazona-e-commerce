@@ -3,7 +3,7 @@ import React from 'react'
 function LoadingBox() {
     return (
         <div className="row loading">
-          <i className=" fa fa-spinner fa-spin fa-3x" ></i>
+          <i className=" fa fa-spinner fa-spin fa-2x" ></i>
         </div>
     )
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { PaystackButton } from 'react-paystack'
-import { fetchOrder, payOrder } from '../action/orderAction'
+import { deliverOrder, fetchOrder, payOrder } from '../action/orderAction'
 import LoadingBox from '../Components/LoadingBox'
 import MessageBox from '../Components/MessageBox'
 import Axios from 'axios'
@@ -11,25 +11,31 @@ import Axios from 'axios'
 function OrderScreen(props) {
     const orderId = props.match.params.id
     const dispatch = useDispatch()
+    const userSignin = useSelector(state => state.userSignin)
+    const { userInfo } = userSignin
     const [publicKey, setPublicKey] = useState('')
     const orderInfo = useSelector(state => state.orderInfo)
     const {loading, error, order} = orderInfo
     const payOrderInfo = useSelector(state => state.payOrderInfo)
     const {loading : loadingPay, success: successPay, error: errorPay} = payOrderInfo
+    const deliverOrderInfo = useSelector(state => state.deliverOrderInfo)
+    const {loading : loadingDeliver, success: successDeliver, error: errorDeliver} = deliverOrderInfo
+    
 
     useEffect(() => {
         const paypalClientId = async () => {
             const {data} = await Axios.get('/api/config/paystack')
             setPublicKey(data)
         }
-        if(!order || successPay || (order && order._id != orderId )){
+        if(!order || successPay || successDeliver || (order && order._id != orderId )){
             dispatch({type: 'PAY_ORDER_RESET'})
+            dispatch({type: 'DELIVER_ORDER_RESET'})
             dispatch(fetchOrder(orderId))
         }else(
             paypalClientId()
         )
         
-    }, [dispatch, orderId, order, successPay])
+    }, [dispatch, orderId, order, successPay, successDeliver])
 
     const ComponentProps = {
         email: order? order.shippingAddress.email : '',
@@ -40,6 +46,11 @@ function OrderScreen(props) {
             dispatch(payOrder(order, response))
         },
         onClose: () => alert('Kindly trade with us')
+    }
+    
+    const deliverHandler = (order) => {
+        dispatch({type: 'DELIVER_ORDER_RESET'})
+        dispatch(deliverOrder(order))
     }
     
     return (
@@ -135,7 +146,12 @@ function OrderScreen(props) {
                             </li>
                         
                     }
-                    
+                    {
+                        userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && 
+                        <li>
+                            <button className="form-button" onClick={() => deliverHandler(order)}> Deliver Order</button>
+                        </li>
+                    }
                 </ul>
             </div>
             
@@ -145,6 +161,6 @@ function OrderScreen(props) {
         </div>
         
         )
-}
 
+}
 export default OrderScreen 

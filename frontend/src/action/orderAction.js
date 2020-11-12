@@ -33,6 +33,23 @@ const payOrder = (order, response) => async (dispatch, getState) => {
 
 }
 
+const deliverOrder = (order) => async (dispatch, getState) => {
+    dispatch({type: 'DELIVER_ORDER_REQUEST'})
+    try {
+        const {userSignin} = getState()
+        const { userInfo } = userSignin
+        const {data} = await Axios.put(`/api/order/${order._id}/deliver`, {} , {
+            headers: {
+                'Authorization' : `Bearer ${userInfo.token}`
+            }
+        })
+        dispatch({type: 'DELIVER_ORDER_SUCCESS', payload: data})
+    } catch (error) {
+        dispatch({type: 'DELIVER_ORDER_FAILED', payload: error.response && error.response.data.message? error.response.data.message : error.message })
+    }
+
+}
+
 const orderHistoryMine = () => async (dispatch, getState) => {
     dispatch({type: 'MY_ORDER_HISTORY_REQUEST'})
     try {
@@ -49,4 +66,36 @@ const orderHistoryMine = () => async (dispatch, getState) => {
     }
 }
 
-export { fetchOrder, payOrder, orderHistoryMine }
+const orderList = () => async (dispatch, getState) => {
+    dispatch({type: 'ORDER_LIST_REQUEST'})
+    try {
+        const {userSignin} = getState()
+        const { userInfo } = userSignin
+        const {data} = await Axios.get('/api/order' , {
+            headers: {
+                'Authorization' : `Bearer ${userInfo.token}`
+            }
+        })
+        dispatch({type: 'ORDER_LIST_SUCCESS', payload: data})
+    } catch (error) {
+        dispatch({type: 'ORDER_LIST_FAILED', payload: error.response && error.response.data.message? error.response.data.message : error.message })
+    }
+}
+
+const deleteOrder = (order) => async (dispatch, getState) => {
+    dispatch({type: 'ORDER_DELETE_REQUEST', payload: order})
+    const {userSignin} = getState()
+    const {userInfo} = userSignin
+    try {
+        const {data} = await Axios.delete(`/api/order/${order._id}/delete`,{
+            headers: {
+                'Authorization': `Bearer ${userInfo.token}`
+            }
+        } )
+        dispatch({type: 'ORDER_DELETE_SUCCESS', payload: data})
+    } catch (error) {
+        dispatch({type: 'ORDER_DELETE_FAILED', payload: error.response && error.response.data.message? error.response.data.message : error.message })
+    }
+}
+
+export { fetchOrder, payOrder, orderHistoryMine, orderList, deleteOrder, deliverOrder }

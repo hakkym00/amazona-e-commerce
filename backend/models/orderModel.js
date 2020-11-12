@@ -6,7 +6,7 @@ const orderSchema = new mongoose.Schema({
         qty: {type: Number, required: true},
         image: {type: String, required: true},
         price: {type: Number, default: 0, required: true},
-        product: {type: mongoose.Schema.Types.ObjectId, ref: 'ProductModel'}
+        product: {type: mongoose.Schema.Types.ObjectId, ref: 'Product'}
     }],
     shippingAddress: {
         fullName: {type: String, required: true},
@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema({
     shippingPrice: {type: Number, required: true},
     taxPrice: {type: Number, required: true},
     totalPrice: {type: Number, required: true},
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'UserModel'},
+    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     isPaid: {type: Boolean, default: false},
     paidAt: {type: Date},
     isDelivered: {type: Boolean, default: false},

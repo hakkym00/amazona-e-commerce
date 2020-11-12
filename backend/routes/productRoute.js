@@ -4,11 +4,26 @@ const { isAuth, isAdmin } = require('../utils')
 const router = express.Router()
 
 router.get('/', async (req, res) => {
-    const products = await ProductModel.find()
-    if(!products){
-        return res.status(404).send({msg: ''})
+    console.log(req.query)
+    console.log(`sortBy is ${req.query.sortBy}`)
+    console.log(`category is ${req.query.category} , searchKeyword is ${req.query.searchKeyword}, `)
+    const category = req.query.category ? { category: req.query.category } : {}
+    const searchKeyword = req.query.searchKeyword ? { name: {
+        $regex: req.query.searchKeyword,
+        $options: 'i'
+    }} : {}
+    console.log(searchKeyword)
+    const sortBy = req.query.sortBy === 'lowest' ? { price: 1 } : req.query.sortBy === 'highest' ? {price: -1} : {_id: -1}
+    try {
+        const products = await ProductModel.find({...category, ...searchKeyword}).sort(sortBy)
+        if(!products){
+            return res.status(404).send({message: 'No products found'})
+        }
+        console.log(products)
+        res.send(products)
+    } catch (error) {
+        return res.status(500).send(error)
     }
-    res.send(products)
 })
 router.get('/:id', async (req, res) => {
     try {
@@ -25,7 +40,7 @@ router.get('/:id', async (req, res) => {
     
 })
 router.post('/', isAuth, isAdmin, async (req, res) => {
-    console.log(req.body)
+    try {
         const product = new ProductModel({
             name: req.body.name,
             image: req.body.image,
@@ -43,7 +58,10 @@ router.post('/', isAuth, isAdmin, async (req, res) => {
         if(newProduct){
             return res.send({ message: 'Product created', data: newProduct })
         }
-        return res.status(500).send({message: 'Error in creating product'})
+        return res.status(401).send({message: 'Error in creating product'})       
+    } catch (error) {
+        return res.status(500).send(error)
+    }
 
 
 })

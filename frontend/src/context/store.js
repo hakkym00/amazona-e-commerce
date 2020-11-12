@@ -4,7 +4,7 @@ import cartItemReducer from '../reducer/cartItemReducer'
 import thunk from 'redux-thunk'
 import { registerReducer, signinReducer, userDetailsReducer, userUpdateProfileReducer } from '../reducer/signinReducer'
 import { createOrderReducer, productDeleteReducer, productListReducer, productSaveReducer, singleProductReducer } from '../reducer/productListReducer'
-import { myOrderHistoryReducer, orderReducer, payOrderReducer } from '../reducer/orderReducer'
+import { deleteOrderReducer, deliverOrderReducer, myOrderHistoryReducer, orderListReducer, orderReducer, payOrderReducer } from '../reducer/orderReducer'
 
 const cartItems = Cookies.getJSON('cartItems') || []
 const userInfo = Cookies.getJSON('userInfo') || null
@@ -26,7 +26,10 @@ const reducer = combineReducers({
     payOrderInfo: payOrderReducer,
     myOrderHistory: myOrderHistoryReducer,
     userDetails: userDetailsReducer,
-    userUpdateProfile: userUpdateProfileReducer
+    userUpdateProfile: userUpdateProfileReducer,
+    listOrders: orderListReducer,
+    orderDelete: deleteOrderReducer,
+    deliverOrderInfo: deliverOrderReducer
 
 })
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter, Route, Link} from 'react-router-dom'
+import {BrowserRouter, Route, Link, Redirect} from 'react-router-dom'
 import ProductScreen from './screen/ProductScreen'
 import HomeScreen from './screen/HomeScreen'
 import './App.css';
@@ -12,13 +12,14 @@ import ShippingScreen from './screen/ShippingScreen';
 import PaymentScreen from './screen/PaymentScreen';
 import PlaceOrder from './screen/PlaceOrder';
 import OrderScreen from './screen/OrderScreen';
-import SampleScreen from './screen/SampleScreen';
 import OrderHistory from './screen/OrderHistory';
 import ProfileScreen from './screen/ProfileScreen';
 import { signoutAction } from './action/signinAction';
 import PrivateRoute from './Components/PrivateRoute';
+import AdminRoute from './Components/AdminRoute';
+import OrdersList from './screen/OrdersList';
 
-function App() {
+function App(props) {
     const cart = useSelector(state => state.cart)
     const userSignin = useSelector(state => state.userSignin)
     const {userInfo} = userSignin
@@ -42,7 +43,7 @@ const signoutHandler = () => {
     <div className="grid-container">
         <header className="header">
             <div className="brand-link">
-                <button onClick={openSidebar} >&#9776;</button>
+                <button className="menuBar" onClick={openSidebar} >&#9776;</button>
                 <Link to='/'>amazona</Link>
                  </div>
             <div className="header-links">
@@ -58,6 +59,19 @@ const signoutHandler = () => {
                     </div>
                     : <Link to='/signin' ><span>Sign in</span></Link>
                 }
+                {
+                    userInfo && 
+                        userInfo.isAdmin && <div className="dropdown">
+                        <div className="profile-name"> Admin  {" "} <i className=" fa fa-caret-down"></i> </div>
+                        <div className="dropdown-content"> 
+                            <Link to='#' > Dashboard </Link> 
+                            <Link to='/products'> Products </Link>
+                            <Link to='/orderlist'> Orders </Link>
+                            <Link to='#'> Users </Link>
+                        </div>
+                    </div>
+                    
+                }
                 
                 <Link to="/cart/:id?"><span>Cart {cartItems.length > 0 && <span className="badge"> {cartItems.length} </span>} </span></Link>
             </div>
@@ -69,8 +83,8 @@ const signoutHandler = () => {
         </div>
         <div className="sidebar-links">
             <ul>
-                <li> <a href=""> Pants</a></li>
-                <li> <a href="">Shirts</a> </li>
+                <li> <Link to="/category/Pant"> Pants</Link> </li>
+                <li> <Link to="/category/Shirt">Shirts</Link> </li>
             </ul>
         </div>
         </aside>
@@ -86,9 +100,11 @@ const signoutHandler = () => {
               <Route path='/register' component={RegisterScreen} />
               <Route path='/signin' component={SigninScreen} />
               <Route path='/cart/:id?' component={CartScreen} />
+              <Route path='/category/:id?' component={HomeScreen} />
               <Route path='/product/:id' component={ProductScreen} />
-              <Route path='/products' component={ProductsScreen} />
+              <AdminRoute path='/products' component={ProductsScreen} />
               <Route path='/orders/history' component={OrderHistory} />
+              <AdminRoute path='/orderlist' component={OrdersList} />
               <PrivateRoute path='/profile' component={ProfileScreen} />
               <Route path='/' exact={true} component={HomeScreen} />
             </div>
